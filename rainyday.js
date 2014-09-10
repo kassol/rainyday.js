@@ -45,7 +45,7 @@ function RainyDay(options, canvas) {
 
 	// prepare canvas elements
 	this.canvas = canvas || this.prepareCanvas();
-	this.prepareBackground(this.canvas.width, this.canvas.height);
+	this.prepareBackground();
 	this.prepareGlass();
 
 	// assume defaults
@@ -70,7 +70,7 @@ RainyDay.prototype.prepareCanvas = function() {
 	canvas.width = this.options.width;
 	canvas.height = this.options.height;
 	this.options.parentElement.appendChild(canvas);
-	if (this.enableSizeChange) {
+	if (this.options.enableSizeChange) {
 		this.setResizeHandler();
 	}
 	return canvas;
@@ -100,9 +100,9 @@ RainyDay.prototype.checkSize = function() {
 	var canvasOffsetTop = this.canvas.offsetTop;
 
 	if (canvasWidth !== clientWidth || canvasHeight !== clientHeight) {
-		this.canvas.width = this.canvas.width;
-		this.canvas.height = this.canvas.height;
-		this.prepareBackground(this.canvas.width, this.canvas.height);
+		this.canvas.width = clientWidth;
+		this.canvas.height = clientHeight;
+		this.prepareBackground();
 		this.glass.width = this.canvas.width;
 		this.glass.height = this.canvas.height;
 		this.prepareReflections();
@@ -243,7 +243,7 @@ RainyDay.prototype.rain = function(presets, speed) {
 			this.putDrop(new Drop(this, Math.random() * this.canvas.width, Math.random() * this.canvas.height, preset[0], preset[1]));
 		}
 		context.save();
-		context.globalAlpha = this.opacity;
+		context.globalAlpha = this.options.opacity;
 		context.drawImage(this.glass, 0, 0, this.canvas.width, this.canvas.height);
 		context.restore();
 	}
@@ -350,7 +350,7 @@ Drop.prototype.clear = function(force) {
 		this.terminate = true;
 		return true;
 	}
-	if ((this.y - this.r > this.rainyday.h) || (this.x - this.r > this.rainyday.w) || (this.x + this.r < 0)) {
+	if ((this.y - this.r > this.rainyday.canvas.height) || (this.x - this.r > this.rainyday.canvas.width) || (this.x + this.r < 0)) {
 		// over edge so stop this drop
 		return true;
 	}
